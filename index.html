@@ -15,15 +15,37 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 动态背景粒子效果 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: backgroundMove 15s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes backgroundMove {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
             width: 100%;
+            position: relative;
+            z-index: 1;
         }
 
         header {
@@ -34,75 +56,159 @@
 
         h1 {
             color: white;
-            font-size: 3rem;
-            font-weight: 300;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+            50% { text-shadow: 0 4px 30px rgba(255, 255, 255, 0.5); }
         }
 
         .subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
             font-weight: 300;
+            letter-spacing: 1px;
         }
 
-        .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
+        /* 瀑布流布局容器 */
+        .waterfall-container {
+            column-count: 4;
+            column-gap: 20px;
             margin-bottom: 40px;
         }
 
         .nav-card {
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 35px 20px;
-            transition: all 0.3s ease;
-            animation: fadeInUp 0.8s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 30px 25px;
+            margin-bottom: 20px;
+            break-inside: avoid;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+            display: block;
             cursor: pointer;
-            min-height: 140px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            animation: cardFadeIn 0.6s ease backwards;
+        }
+
+        /* 为每个卡片添加延迟动画 */
+        .nav-card:nth-child(1) { animation-delay: 0.1s; }
+        .nav-card:nth-child(2) { animation-delay: 0.2s; }
+        .nav-card:nth-child(3) { animation-delay: 0.3s; }
+        .nav-card:nth-child(4) { animation-delay: 0.4s; }
+        .nav-card:nth-child(5) { animation-delay: 0.5s; }
+        .nav-card:nth-child(6) { animation-delay: 0.6s; }
+        .nav-card:nth-child(7) { animation-delay: 0.7s; }
+        .nav-card:nth-child(8) { animation-delay: 0.8s; }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 卡片悬浮光效 */
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }
+
+        .nav-card:hover::before {
+            left: 100%;
+            opacity: 1;
         }
 
         .nav-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 1);
         }
 
         .nav-icon {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin-bottom: 15px;
+            display: block;
+            animation: iconFloat 3s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .nav-card:hover .nav-icon {
+            animation: iconBounce 0.6s ease;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(5deg); }
         }
 
         .nav-title {
             color: #333;
-            font-size: 1.1rem;
-            font-weight: 500;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+
+        .nav-card:hover .nav-title {
+            color: #667eea;
         }
 
         .nav-desc {
-            color: #999;
-            font-size: 0.85rem;
-            margin-top: 5px;
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        /* 不同高度的卡片样式 */
+        .nav-card.tall {
+            padding: 40px 25px;
+        }
+
+        .nav-card.medium {
+            padding: 35px 25px;
         }
 
         footer {
             text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            padding: 20px 0;
-            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            padding: 30px 0;
+            font-size: 1rem;
+            animation: fadeInUp 1s ease;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         @keyframes fadeInDown {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(-30px);
             }
             to {
                 opacity: 1;
@@ -113,7 +219,7 @@
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -121,13 +227,35 @@
             }
         }
 
+        /* 响应式布局 */
+        @media (max-width: 1200px) {
+            .waterfall-container {
+                column-count: 3;
+            }
+        }
+
         @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .waterfall-container {
+                column-count: 2;
+                column-gap: 15px;
+            }
+
+            .nav-card {
+                padding: 25px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
             h1 {
                 font-size: 2rem;
             }
-            
-            .nav-grid {
-                grid-template-columns: 1fr;
+
+            .waterfall-container {
+                column-count: 1;
             }
         }
     </style>
@@ -135,30 +263,20 @@
 <body>
     <div class="container">
         <header>
-            <h1>兔子草场</h1>
+            <h1>🐰 兔子草场</h1>
+            <p class="subtitle">探索精彩世界</p>
         </header>
 
-        <div class="nav-grid">
+        <div class="waterfall-container">
             <a href="https://bbs.rabbitvps.com" target="_blank" class="nav-card">
-                <div class="nav-icon">🐦</div>
+                <div class="nav-icon">💬</div>
                 <div class="nav-title">服务器交流</div>
+                <div class="nav-desc">服务器交流</div>
             </a>
-      <a href="https://bbs.rabbitvps.com" target="_blank" class="nav-card">
-                <div class="nav-icon">🐦</div>
-                <div class="nav-title">服务器交流</div>
-            </a>
-      <a href="https://bbs.rabbitvps.com" target="_blank" class="nav-card">
-                <div class="nav-icon">🐦</div>
-                <div class="nav-title">服务器交流</div>
-            </a>
-      <a href="https://bbs.rabbitvps.com" target="_blank" class="nav-card">
-                <div class="nav-icon">🐦</div>
-                <div class="nav-title">服务器交流</div>
-            </a>
-
         </div>
+
         <footer>
-            <p>© 2025 兔子草场 </p>
+            <p>© 2025 兔子草场 · 让技术更有温度</p>
         </footer>
     </div>
 </body>
